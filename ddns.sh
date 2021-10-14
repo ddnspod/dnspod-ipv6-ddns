@@ -17,20 +17,10 @@ GETIPV6="https://ip.ddnspod.com"  #互联网获取本机ipv6地址
 #GETIPV6="https://ip.ddnspod.com/prefix/1:2:3:4"  #互联网获取本机ipv6地址前缀+自定义的固定后缀
 #CONF END
 
-IPREX="((([0-9A-Fa-f]{1,4}:){7}([0-9A-Fa-f]{1,4}|:))|(([0-9A-Fa-f]{1,4}:){6}(:[0-9A-Fa-f]{1,4}|((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){5}(((:[0-9A-Fa-f]{1,4}){1,2})|:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3})|:))|(([0-9A-Fa-f]{1,4}:){4}(((:[0-9A-Fa-f]{1,4}){1,3})|((:[0-9A-Fa-f]{1,4})?:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){3}(((:[0-9A-Fa-f]{1,4}){1,4})|((:[0-9A-Fa-f]{1,4}){0,2}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){2}(((:[0-9A-Fa-f]{1,4}){1,5})|((:[0-9A-Fa-f]{1,4}){0,3}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(([0-9A-Fa-f]{1,4}:){1}(((:[0-9A-Fa-f]{1,4}){1,6})|((:[0-9A-Fa-f]{1,4}){0,4}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:))|(:(((:[0-9A-Fa-f]{1,4}){1,7})|((:[0-9A-Fa-f]{1,4}){0,5}:((25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)){3}))|:)))"
-
-URLIP=$(curl -6 -k $(if [ -n "$OUT" ]; then echo "--interface $OUT"; fi) -s $GETIPV6|grep -Eo "$IPREX"|tail -n 1)
-if (echo $URLIP |grep -qEvo "$IPREX");then
-	URLIP="Get $DOMAIN URLIP Failed."
-fi
+URLIP=$(curl -6 -s -k $GETIPV6)
 echo "[URL IP]:$URLIP"
 
-DNSTEST=$(nslookup -q=AAAA $host.$domain)
-if (echo $DNSTEST | grep -qEvo "$IPREX");then
-	echo "Get $host.$domain DNS Failed."
-	exit
-else DNSIP=$(echo $DNSTEST | grep -Eo "$IPREX" | tail -n 1)
-fi
+DNSIP=$(nslookup -q=AAAA $host.$domain)
 echo "[DNS IP]:$DNSIP"
 
 if [ "$DNSIP" == "$URLIP" ];then
@@ -54,7 +44,6 @@ if [ "$iferr" == "1" ];then
 	ddns=$(curl -s -k -X POST https://dnsapi.cn/Record.Modify -d "${token}&record_type=AAAA&record_id=${record_id}&record_line_id=${record_line_id}&value=${URLIP}")
 	ddns_result="$(echo ${ddns#*message\"} | cut -d'"' -f2)"
 	echo -n "DDNS upadte result:$ddns_result "
-	echo $ddns | grep -Eo "$IPREX" | tail -n 1
 	else echo -n Get $host.$domain error :
 	echo $(echo ${Record#*message\"}) | cut -d'"' -f2
 fi
