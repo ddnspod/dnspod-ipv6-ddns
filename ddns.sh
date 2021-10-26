@@ -20,8 +20,14 @@ GETIPV6="https://ip.ddnspod.com"  #互联网获取本机ipv6地址
 URLIP=$(curl -6 -s -k $GETIPV6)
 echo "[URL IP]:$URLIP"
 
-DNSIP=$(nslookup -q=AAAA $host.$domain)
-echo "[DNS IP]:$DNSIP"
+if [ "$host" == "@" ];then
+	DNSIP=$(nslookup -q=AAAA $domain)
+	echo "[DNS IP]:$DNSIP"
+else
+	DNSIP=$(nslookup -q=AAAA $host.$domain)
+	echo "[DNS IP]:$DNSIP"
+fi
+
 
 if [ "$DNSIP" == "$URLIP" ];then
 	echo "IP SAME IN DNS,SKIP UPDATE."
@@ -42,8 +48,8 @@ if [ "$iferr" == "1" ];then
 	record_line_id=$(echo ${Record#*line_id} | cut -d'"' -f3)
 	echo Start DDNS update...
 	ddns=$(curl -s -k -X POST https://dnsapi.cn/Record.Modify -d "${token}&record_id=${record_id}&record_line_id=${record_line_id}&value=${URLIP}")
-	ddns_result="$(echo ${ddns#*message\"} | cut -d'"' -f2)"
-	echo -n "DDNS upadte result:$ddns_result "
+	ddns_result="$(echo -en ${ddns#*message\"} | cut -d'"' -f2)"
+	echo -e "DDNS upadte result:$ddns_result \n "
 	else echo -n Get $host.$domain error :
-	echo $(echo ${Record#*message\"}) | cut -d'"' -f2
+	echo $(echo -en ${Record#*message\"}) | cut -d'"' -f2
 fi
