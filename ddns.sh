@@ -49,7 +49,7 @@ if [ "$iferr" == "1" ];then
 	echo Start DDNS update...
 	ddns=$(curl -s -k -X POST https://dnsapi.cn/Record.Modify -d "${token}&record_id=${record_id}&record_line_id=${record_line_id}&value=${URLIP}")
 	ddns_result="$(echo -en ${ddns#*message\"} | cut -d'"' -f2)"
-	echo -e "DDNS upadte result:$ddns_result \n "
+	echo -en"DDNS upadte result:$ddns_result \n "
 	else echo -n Get $host.$domain error :
 	echo $(echo -en ${Record#*message\"}) | cut -d'"' -f2
 fi
