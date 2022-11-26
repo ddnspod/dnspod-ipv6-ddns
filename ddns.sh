@@ -35,7 +35,7 @@ if [ "$DNSIP" == "$URLIP" ];then
 fi
 
 token="login_token=${API_ID},${API_Token}&format=json&domain=${domain}&record_type=AAAA&sub_domain=${host}"
-Record=$(curl -s -k -X POST https://dnsapi.cn/Record.List -d "${token}")
+Record=$(curl -s -k -X POST https://dnsapi.ddnspod.com/Record.List -d "${token}")
 iferr=$(echo ${Record#*code} | cut -d'"' -f3)
 if [ "$iferr" == "1" ];then
 	record_ip=$(echo ${Record#*value} | cut -d'"' -f3)
@@ -47,7 +47,7 @@ if [ "$iferr" == "1" ];then
 	record_id=$(echo ${Record#*\"records\"\:\[\{\"id\"} | cut -d'"' -f2)
 	record_line_id=$(echo ${Record#*line_id} | cut -d'"' -f3)
 	echo Start DDNS update...
-	ddns=$(curl -s -k -X POST https://dnsapi.cn/Record.Modify -d "${token}&record_id=${record_id}&record_line_id=${record_line_id}&value=${URLIP}")
+	ddns=$(curl -s -k -X POST https://dnsapi.ddnspod.com/Record.Modify -d "${token}&record_id=${record_id}&record_line_id=${record_line_id}&value=${URLIP}")
 	ddns_result="$(echo -en ${ddns#*message\"} | cut -d'"' -f2)"
 	echo -en "DDNS upadte result:$ddns_result \n "
 	else echo -n Get $host.$domain error :
