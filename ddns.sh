@@ -17,7 +17,7 @@ GETIPV6="https://ip.ddnspod.com"  #互联网获取本机ipv6地址
 #GETIPV6="https://ip.ddnspod.com/prefix/1:2:3:4"  #互联网获取本机ipv6地址前缀+自定义的固定后缀
 #CONF END
 
-URLIP=$(curl -6 -s -k $GETIPV6)
+URLIP=$(curl -6 -s $GETIPV6)
 echo "[URL IP]:$URLIP"
 
 if [ "$host" == "@" ];then
