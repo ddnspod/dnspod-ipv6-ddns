@@ -2,14 +2,13 @@
 # -------------------------------------------------------------------------------
 # 2023-12更新：获取本地DNS的IPv6换成了host命令
 # -------------------------------------------------------------------------------
-# Dnspod Only-ipv6 DDNS with BashShell
 # 进入https://console.dnspod.cn/account/token/token页面，创建API_ID和API_Token
 # 确保子域名已经存在解析AAAA记录，如没有则手动去创建一个AAAA记录
 # 获取自己的外网ip地址请详细查看https://www.ddnspod.com
 # -------------------------------------------------------------------------------
 
 #CONF START
-API_ID="12345" # 填写自己的API_ID
+API_ID="12345"  # 填写自己的API_ID
 API_Token="abcdefgfikajhsbdemdcm172849409328"  # 填写自己的Token
 domain="baidu.com"  # 填写自己的主域名
 host="www"  # 填写自己的子域名
@@ -19,15 +18,15 @@ GETIPV6="https://ip.ddnspod.com"  # 互联网获取本机ipv6地址
 #CONF END
 
 # 从互联网获取本机ipv6外网地址
-URLIP=$(curl -6 -s $GETIPV6)
+URLIP=$(curl -6 -s $GETIPV6 -A 'DDnsPod-202312')
 echo "[URL IP]:$URLIP"
 
 # 使用host命令获取本地DNS解析的ipv6地址
 if [ "$host" == "@" ];then
-	DNSIP=$(host $domain | grep 'IPv6 address' | awk '{print $5}')
+	DNSIP=$(host -t AAAA $domain | grep 'IPv6 address' | sed -n '1p' | awk '{print $5}')
 	echo "[DNS IP]:$DNSIP"
 else
-    DNSIP=$(host $host.$domain | grep 'IPv6 address' | awk '{print $5}')
+    DNSIP=$(host -t AAAA $host.$domain | grep 'IPv6 address' | sed -n '1p' | awk '{print $5}')
 	echo "[DNS IP]:$DNSIP"
 fi
 
