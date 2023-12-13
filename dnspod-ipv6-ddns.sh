@@ -23,10 +23,16 @@ echo "[URL IP]:$URLIP"
 
 # 使用host命令获取本地DNS解析的ipv6地址
 if [ "$host" == "@" ];then
-	DNSIP=$(host -t AAAA $domain | grep 'IPv6 address' | sed -n '1p' | awk '{print $5}')
+    # 使用host命令查询DNS
+    DNSIP=$(host -t AAAA $domain | grep 'IPv6 address' | sed -n '1p' | awk '{print $5}')
+    # 使用nslookup命令查询DNS
+#    DNSIP=$(nslookup -tpye=AAAA $domain | grep 'Address:' | sed -n '$p' | awk '{print $2}')
 	echo "[DNS IP]:$DNSIP"
 else
+    # 使用host命令查询DNS
     DNSIP=$(host -t AAAA $host.$domain | grep 'IPv6 address' | sed -n '1p' | awk '{print $5}')
+    # 使用nslookup命令查询DNS
+#    DNSIP=$(nslookup -tpye=AAAA $host.$domain | grep 'Address:' | sed -n '$p' | awk '{print $2}')
 	echo "[DNS IP]:$DNSIP"
 fi
 
