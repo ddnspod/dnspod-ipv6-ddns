@@ -1,8 +1,7 @@
 #!/bin/bash
 # -------------------------------------------------------------------------------
 #Dnspod Only-ipv6 DDNS with BashShell
-#改编自https://github.com/kkkgo/dnspod-ddns-with-bashshell
-#API_ID和API_Token在Dnspod的控制台 -> 账号中心 -> 密钥管理 -> 创建密钥
+#进入https://console.dnspod.cn/account/token/token页面，创建API_ID和API_Token
 #确保子域名已经存在解析AAAA记录，如没有则手动去创建一个AAAA记录
 #获取自己的外网ip地址请详细查看https://www.ddnspod.com
 # -------------------------------------------------------------------------------
@@ -13,8 +12,8 @@ API_Token="abcdefgfikajhsbdemdcm172849409328"  #填写自己的Token
 domain="baidu.com"  #填写自己的主域名
 host="www"  #填写自己的子域名
 GETIPV6="https://ip.ddnspod.com"  #互联网获取本机ipv6地址
-#GETIPV6="https://ip.ddnspod.com/prefix"  #互联网获取本机ipv6地址前缀，可拼接后缀
 #GETIPV6="https://ip.ddnspod.com/prefix/1:2:3:4"  #互联网获取本机ipv6地址前缀+自定义的固定后缀
+#GETIPV6="https://ip.ddnspod.com/prefix/:5"  #互联网获取本机ipv6地址前缀，可拼接后缀
 #CONF END
 
 URLIP=$(curl -6 -s $GETIPV6)
@@ -30,7 +29,7 @@ fi
 
 
 if [ "$DNSIP" == "$URLIP" ];then
-	echo "IP SAME IN DNS,SKIP UPDATE."
+	echo "当前IP与DNS地址相同, 跳过修改操作."
 	exit
 fi
 
@@ -41,7 +40,7 @@ if [ "$iferr" == "1" ];then
 	record_ip=$(echo ${Record#*value} | cut -d'"' -f3)
 	echo "[API IP]:$record_ip"
 	if [ "$record_ip" == "$URLIP" ];then
-		echo "IP SAME IN API,SKIP UPDATE."
+		echo "当前IP与腾讯云域名解析地址相同, 跳过修改操作."
 		exit
 	fi
 	record_id=$(echo ${Record#*\"records\"\:\[\{\"id\"} | cut -d'"' -f2)
