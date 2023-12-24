@@ -1,6 +1,6 @@
 #!/bin/bash
 # -------------------------------------------------------------------------------
-# 2023-12更新：获取本地DNS的IPv6换成了host命令
+# 2023-12更新：获取本地DNS的IPv6增加host命令
 # -------------------------------------------------------------------------------
 # 进入https://console.dnspod.cn/account/token/token页面，创建API_ID和API_Token
 # 确保子域名已经存在解析AAAA记录，如没有则手动去创建一个AAAA记录
@@ -23,16 +23,16 @@ echo "[URL IP]:$URLIP"
 
 # 使用host命令获取本地DNS解析的ipv6地址
 if [ "$host" == "@" ];then
-	# 使用host命令查询DNS
-    DNSIP=$(host -t AAAA $domain | grep 'IPv6 address' | head -n 1 | awk '{print $NF}')
+    # 使用host命令查询DNS
+    # DNSIP=$(host -t AAAA $domain | grep 'IPv6 address' | head -n 1 | awk '{print $NF}')
     # 使用nslookup命令查询DNS
-#    DNSIP=$(nslookup -type=AAAA $domain | grep 'Address' | tail -n 1 | awk '{print $NF}')
+    DNSIP=$(nslookup -type=AAAA $domain | grep 'Address' | tail -n 1 | awk '{print $NF}')
 	echo "[DNS IP]:$DNSIP"
 else
     # 使用host命令查询DNS
-    DNSIP=$(host -t AAAA $host.$domain | grep 'IPv6 address' | head -n 1 | awk '{print $NF}')
+    # DNSIP=$(host -t AAAA $host.$domain | grep 'IPv6 address' | head -n 1 | awk '{print $NF}')
     # 使用nslookup命令查询DNS
-#    DNSIP=$(nslookup -type=AAAA $host.$domain | grep 'Address' | tail -n 1 | awk '{print $NF}')
+    DNSIP=$(nslookup -type=AAAA $host.$domain | grep 'Address' | tail -n 1 | awk '{print $NF}')
 	echo "[DNS IP]:$DNSIP"
 fi
 
