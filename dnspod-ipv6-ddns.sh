@@ -1,6 +1,6 @@
 #!/bin/bash
 # -------------------------------------------------------------------------------
-# 2023-12更新：获取本地DNS的IPv6增加host命令
+# 2025-09更新：更改api域名
 # -------------------------------------------------------------------------------
 # 进入https://console.dnspod.cn/account/token/token页面，创建API_ID和API_Token
 # 确保子域名已经存在解析AAAA记录，如没有则手动去创建一个AAAA记录
@@ -18,7 +18,7 @@ GETIPV6="https://ip.ddnspod.com"  # 互联网获取本机ipv6地址
 #CONF END
 
 # 从互联网获取本机ipv6外网地址
-URLIP=$(curl -6 -s $GETIPV6 -A 'DDnsPod-202312')
+URLIP=$(curl -6 -s $GETIPV6 -A 'DDnsPod-202509')
 echo "[URL IP]:$URLIP"
 
 # 使用host命令获取本地DNS解析的ipv6地址
@@ -44,7 +44,7 @@ fi
 
 # 从腾讯云API接口获取域名解析的ipv6地址，如果不相同则更新腾讯云解析
 token="login_token=${API_ID},${API_Token}&format=json&domain=${domain}&record_type=AAAA&sub_domain=${host}"
-Record=$(curl -s -X POST https://dnsapi.ddnspod.com/Record.List -d "${token}")
+Record=$(curl -s -X POST https://dnsapi.cn/Record.List -d "${token}")
 iferr=$(echo ${Record#*code} | cut -d'"' -f3)
 if [ "$iferr" == "1" ];then
 	record_ip=$(echo ${Record#*value} | cut -d'"' -f3)
@@ -56,7 +56,7 @@ if [ "$iferr" == "1" ];then
 	record_id=$(echo ${Record#*\"records\"\:\[\{\"id\"} | cut -d'"' -f2)
 	record_line_id=$(echo ${Record#*line_id} | cut -d'"' -f3)
 	echo Start DDNS update...
-	ddns=$(curl -s -X POST https://dnsapi.ddnspod.com/Record.Modify -d "${token}&record_id=${record_id}&record_line_id=${record_line_id}&value=${URLIP}")
+	ddns=$(curl -s -X POST https://dnsapi.cn/Record.Modify -d "${token}&record_id=${record_id}&record_line_id=${record_line_id}&value=${URLIP}")
 	ddns_result="$(echo -en ${ddns#*message\"} | cut -d'"' -f2)"
 	echo -en "DDNS upadte result:$ddns_result \n "
 	else echo -n Get $host.$domain error :
